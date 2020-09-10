@@ -26,11 +26,6 @@ namespace Azure { namespace Core { namespace Test {
       Azure::Core::Http::HttpStatusCode code,
       Azure::Core::Http::HttpStatusCode expectedCode)
   {
-    /* if (code != Azure::Core::Http::HttpStatusCode::Ok)
-    {
-      std::cout << static_cast<typename std::underlying_type<Http::HttpStatusCode>::type>(code);
-      return;
-    } */
     EXPECT_TRUE(code == expectedCode);
   }
 
@@ -46,7 +41,7 @@ namespace Azure { namespace Core { namespace Test {
 
     if (size > 0)
     { // only for known body size
-      EXPECT_EQ(bodyVector.size(), size);
+      EXPECT_EQ(bodySize, size);
     }
 
     if (expectedBody.size() > 0)
@@ -81,9 +76,9 @@ namespace Azure { namespace Core { namespace Test {
     }
   }
 
-  TEST_F(TransportAdapter, customSizePutFromFile)
+  TEST_F(TransportAdapter, SizePutFromFile)
   {
-    std::string host("http://httpbin.org/put");
+    Azure::Core::Http::Url host("http://httpbin.org/put");
     std::string testDataPath(AZURE_TEST_DATA_PATH);
 
 #ifdef POSIX
@@ -116,9 +111,9 @@ namespace Azure { namespace Core { namespace Test {
     }
   }
 
-  TEST_F(TransportAdapter, customSizePutFromFileDefault)
+  TEST_F(TransportAdapter, SizePutFromFileDefault)
   {
-    std::string host("http://httpbin.org/put");
+    Azure::Core::Http::Url host("http://httpbin.org/put");
     std::string testDataPath(AZURE_TEST_DATA_PATH);
 
 #ifdef POSIX
@@ -150,9 +145,9 @@ namespace Azure { namespace Core { namespace Test {
     }
   }
 
-  TEST_F(TransportAdapter, customSizePutFromFileBiggerPage)
+  TEST_F(TransportAdapter, SizePutFromFileBiggerPage)
   {
-    std::string host("http://httpbin.org/put");
+    Azure::Core::Http::Url host("http://httpbin.org/put");
     std::string testDataPath(AZURE_TEST_DATA_PATH);
 
 #ifdef POSIX

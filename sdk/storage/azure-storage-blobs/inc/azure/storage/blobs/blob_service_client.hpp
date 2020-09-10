@@ -8,7 +8,6 @@
 #include "azure/storage/blobs/blob_options.hpp"
 #include "azure/storage/blobs/protocol/blob_rest_client.hpp"
 #include "azure/storage/common/storage_credential.hpp"
-#include "azure/storage/common/storage_uri_builder.hpp"
 
 #include <memory>
 #include <string>
@@ -85,7 +84,7 @@ namespace Azure { namespace Storage { namespace Blobs {
      *
      * @return the blob service's primary uri endpoint.
      */
-    std::string GetUri() const { return m_serviceUrl.ToString(); }
+    std::string GetUri() const { return m_serviceUrl.GetAbsoluteUrl(); }
 
     /**
      * @brief Returns a single segment of blob containers in the storage account, starting
@@ -118,7 +117,7 @@ namespace Azure { namespace Storage { namespace Blobs {
         const GetUserDelegationKeyOptions& options = GetUserDelegationKeyOptions()) const;
 
     /**
-     * @brief Sets properties for a storage account’s Blob service endpoint, including
+     * @brief Sets properties for a storage account's Blob service endpoint, including
      * properties for Storage Analytics, CORS (Cross-Origin Resource Sharing) rules and soft delete
      * settings. You can also use this operation to set the default request version for all incoming
      * requests to the Blob service that do not have a version specified.
@@ -133,7 +132,7 @@ namespace Azure { namespace Storage { namespace Blobs {
         const SetServicePropertiesOptions& options = SetServicePropertiesOptions()) const;
 
     /**
-     * @brief Gets the properties of a storage account’s blob service, including properties
+     * @brief Gets the properties of a storage account's blob service, including properties
      * for Storage Analytics and CORS (Cross-Origin Resource Sharing) rules.
      *
      * @param options Optional parameters to execute this function.
@@ -162,8 +161,29 @@ namespace Azure { namespace Storage { namespace Blobs {
     Azure::Core::Response<GetServiceStatisticsResult> GetStatistics(
         const GetBlobServiceStatisticsOptions& options = GetBlobServiceStatisticsOptions()) const;
 
+    /**
+     * @brief The Filter Blobs operation enables callers to list blobs across all containers
+     * whose tags match a given search expression. Filter blobs searches across all containers
+     * within a storage account but can be scoped within the expression to a single container.
+     *
+     * @param tagFilterSqlExpression The where parameter enables the caller to query blobs
+     * whose tags match a given expression. The given expression must evaluate to true for a blob to
+     * be returned in the results. The[OData - ABNF] filter syntax rule defines the formal grammar
+     * for the value of the where query parameter, however, only a subset of the OData filter syntax
+     * is supported in the Blob service.
+     * @param options Optional parameters to execute this
+     * function.
+     * @return A FilterBlobSegment describing the blobs.
+     */
+    Azure::Core::Response<FindBlobsByTagsResult> FindBlobsByTags(
+        const std::string& tagFilterSqlExpression,
+        const FindBlobsByTagsOptions& options = FindBlobsByTagsOptions()) const;
+
   protected:
-    UriBuilder m_serviceUrl;
+    Azure::Core::Http::Url m_serviceUrl;
     std::shared_ptr<Azure::Core::Http::HttpPipeline> m_pipeline;
+
+  private:
+    friend class BlobBatchClient;
   };
 }}} // namespace Azure::Storage::Blobs
