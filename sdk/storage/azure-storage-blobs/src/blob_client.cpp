@@ -32,11 +32,11 @@ namespace Azure { namespace Storage { namespace Blobs {
 
     if (parsedConnectionString.KeyCredential)
     {
-      return BlobClient(blobUri.ToString(), parsedConnectionString.KeyCredential, options);
+      return BlobClient(blobUri.GetAbsoluteUrl(), parsedConnectionString.KeyCredential, options);
     }
     else
     {
-      return BlobClient(blobUri.ToString(), options);
+      return BlobClient(blobUri.GetAbsoluteUrl(), options);
     }
   }
 
@@ -174,6 +174,7 @@ namespace Azure { namespace Storage { namespace Blobs {
     protocolLayerOptions.IfUnmodifiedSince = options.AccessConditions.IfUnmodifiedSince;
     protocolLayerOptions.IfMatch = options.AccessConditions.IfMatch;
     protocolLayerOptions.IfNoneMatch = options.AccessConditions.IfNoneMatch;
+    protocolLayerOptions.IfTags = options.AccessConditions.TagConditions;
     if (m_customerProvidedKey.HasValue())
     {
       protocolLayerOptions.EncryptionKey = m_customerProvidedKey.GetValue().Key;
@@ -182,7 +183,7 @@ namespace Azure { namespace Storage { namespace Blobs {
     }
 
     auto downloadResponse = BlobRestClient::Blob::Download(
-        options.Context, *m_pipeline, m_blobUrl.ToString(), protocolLayerOptions);
+        options.Context, *m_pipeline, m_blobUrl, protocolLayerOptions);
 
     {
       // In case network failure during reading the body
@@ -484,6 +485,7 @@ namespace Azure { namespace Storage { namespace Blobs {
     protocolLayerOptions.IfUnmodifiedSince = options.AccessConditions.IfUnmodifiedSince;
     protocolLayerOptions.IfMatch = options.AccessConditions.IfMatch;
     protocolLayerOptions.IfNoneMatch = options.AccessConditions.IfNoneMatch;
+    protocolLayerOptions.IfTags = options.AccessConditions.TagConditions;
     if (m_customerProvidedKey.HasValue())
     {
       protocolLayerOptions.EncryptionKey = m_customerProvidedKey.GetValue().Key;
@@ -491,7 +493,7 @@ namespace Azure { namespace Storage { namespace Blobs {
       protocolLayerOptions.EncryptionAlgorithm = m_customerProvidedKey.GetValue().Algorithm;
     }
     return BlobRestClient::Blob::GetProperties(
-        options.Context, *m_pipeline, m_blobUrl.ToString(), protocolLayerOptions);
+        options.Context, *m_pipeline, m_blobUrl, protocolLayerOptions);
   }
 
   Azure::Core::Response<SetBlobHttpHeadersResult> BlobClient::SetHttpHeaders(
@@ -505,8 +507,9 @@ namespace Azure { namespace Storage { namespace Blobs {
     protocolLayerOptions.IfUnmodifiedSince = options.AccessConditions.IfUnmodifiedSince;
     protocolLayerOptions.IfMatch = options.AccessConditions.IfMatch;
     protocolLayerOptions.IfNoneMatch = options.AccessConditions.IfNoneMatch;
+    protocolLayerOptions.IfTags = options.AccessConditions.TagConditions;
     return BlobRestClient::Blob::SetHttpHeaders(
-        options.Context, *m_pipeline, m_blobUrl.ToString(), protocolLayerOptions);
+        options.Context, *m_pipeline, m_blobUrl, protocolLayerOptions);
   }
 
   Azure::Core::Response<SetBlobMetadataResult> BlobClient::SetMetadata(
@@ -520,6 +523,7 @@ namespace Azure { namespace Storage { namespace Blobs {
     protocolLayerOptions.IfUnmodifiedSince = options.AccessConditions.IfUnmodifiedSince;
     protocolLayerOptions.IfMatch = options.AccessConditions.IfMatch;
     protocolLayerOptions.IfNoneMatch = options.AccessConditions.IfNoneMatch;
+    protocolLayerOptions.IfTags = options.AccessConditions.TagConditions;
     if (m_customerProvidedKey.HasValue())
     {
       protocolLayerOptions.EncryptionKey = m_customerProvidedKey.GetValue().Key;
@@ -528,7 +532,7 @@ namespace Azure { namespace Storage { namespace Blobs {
     }
     protocolLayerOptions.EncryptionScope = m_encryptionScope;
     return BlobRestClient::Blob::SetMetadata(
-        options.Context, *m_pipeline, m_blobUrl.ToString(), protocolLayerOptions);
+        options.Context, *m_pipeline, m_blobUrl, protocolLayerOptions);
   }
 
   Azure::Core::Response<SetBlobAccessTierResult> BlobClient::SetAccessTier(
@@ -539,7 +543,7 @@ namespace Azure { namespace Storage { namespace Blobs {
     protocolLayerOptions.Tier = Tier;
     protocolLayerOptions.RehydratePriority = options.RehydratePriority;
     return BlobRestClient::Blob::SetAccessTier(
-        options.Context, *m_pipeline, m_blobUrl.ToString(), protocolLayerOptions);
+        options.Context, *m_pipeline, m_blobUrl, protocolLayerOptions);
   }
 
   Azure::Core::Response<StartCopyBlobFromUriResult> BlobClient::StartCopyFromUri(
@@ -556,14 +560,16 @@ namespace Azure { namespace Storage { namespace Blobs {
     protocolLayerOptions.IfUnmodifiedSince = options.AccessConditions.IfUnmodifiedSince;
     protocolLayerOptions.IfMatch = options.AccessConditions.IfMatch;
     protocolLayerOptions.IfNoneMatch = options.AccessConditions.IfNoneMatch;
+    protocolLayerOptions.IfTags = options.AccessConditions.TagConditions;
     protocolLayerOptions.SourceLeaseId = options.SourceConditions.LeaseId;
     protocolLayerOptions.SourceIfModifiedSince = options.SourceConditions.IfModifiedSince;
     protocolLayerOptions.SourceIfUnmodifiedSince = options.SourceConditions.IfUnmodifiedSince;
     protocolLayerOptions.SourceIfMatch = options.SourceConditions.IfMatch;
     protocolLayerOptions.SourceIfNoneMatch = options.SourceConditions.IfNoneMatch;
     protocolLayerOptions.ShouldSealDestination = options.ShouldSealDestination;
+    protocolLayerOptions.SourceIfTags = options.SourceConditions.TagConditions;
     return BlobRestClient::Blob::StartCopyFromUri(
-        options.Context, *m_pipeline, m_blobUrl.ToString(), protocolLayerOptions);
+        options.Context, *m_pipeline, m_blobUrl, protocolLayerOptions);
   }
 
   Azure::Core::Response<AbortCopyBlobFromUriResult> BlobClient::AbortCopyFromUri(
@@ -574,7 +580,7 @@ namespace Azure { namespace Storage { namespace Blobs {
     protocolLayerOptions.CopyId = copyId;
     protocolLayerOptions.LeaseId = options.AccessConditions.LeaseId;
     return BlobRestClient::Blob::AbortCopyFromUri(
-        options.Context, *m_pipeline, m_blobUrl.ToString(), protocolLayerOptions);
+        options.Context, *m_pipeline, m_blobUrl, protocolLayerOptions);
   }
 
   Azure::Core::Response<CreateBlobSnapshotResult> BlobClient::CreateSnapshot(
@@ -587,6 +593,7 @@ namespace Azure { namespace Storage { namespace Blobs {
     protocolLayerOptions.IfUnmodifiedSince = options.AccessConditions.IfUnmodifiedSince;
     protocolLayerOptions.IfMatch = options.AccessConditions.IfMatch;
     protocolLayerOptions.IfNoneMatch = options.AccessConditions.IfNoneMatch;
+    protocolLayerOptions.IfTags = options.AccessConditions.TagConditions;
     if (m_customerProvidedKey.HasValue())
     {
       protocolLayerOptions.EncryptionKey = m_customerProvidedKey.GetValue().Key;
@@ -595,7 +602,7 @@ namespace Azure { namespace Storage { namespace Blobs {
     }
     protocolLayerOptions.EncryptionScope = m_encryptionScope;
     return BlobRestClient::Blob::CreateSnapshot(
-        options.Context, *m_pipeline, m_blobUrl.ToString(), protocolLayerOptions);
+        options.Context, *m_pipeline, m_blobUrl, protocolLayerOptions);
   }
 
   Azure::Core::Response<DeleteBlobResult> BlobClient::Delete(const DeleteBlobOptions& options) const
@@ -607,8 +614,9 @@ namespace Azure { namespace Storage { namespace Blobs {
     protocolLayerOptions.IfUnmodifiedSince = options.AccessConditions.IfUnmodifiedSince;
     protocolLayerOptions.IfMatch = options.AccessConditions.IfMatch;
     protocolLayerOptions.IfNoneMatch = options.AccessConditions.IfNoneMatch;
+    protocolLayerOptions.IfTags = options.AccessConditions.TagConditions;
     return BlobRestClient::Blob::Delete(
-        options.Context, *m_pipeline, m_blobUrl.ToString(), protocolLayerOptions);
+        options.Context, *m_pipeline, m_blobUrl, protocolLayerOptions);
   }
 
   Azure::Core::Response<UndeleteBlobResult> BlobClient::Undelete(
@@ -616,7 +624,7 @@ namespace Azure { namespace Storage { namespace Blobs {
   {
     BlobRestClient::Blob::UndeleteBlobOptions protocolLayerOptions;
     return BlobRestClient::Blob::Undelete(
-        options.Context, *m_pipeline, m_blobUrl.ToString(), protocolLayerOptions);
+        options.Context, *m_pipeline, m_blobUrl, protocolLayerOptions);
   }
 
   Azure::Core::Response<AcquireBlobLeaseResult> BlobClient::AcquireLease(
@@ -631,8 +639,9 @@ namespace Azure { namespace Storage { namespace Blobs {
     protocolLayerOptions.IfUnmodifiedSince = options.IfUnmodifiedSince;
     protocolLayerOptions.IfMatch = options.IfMatch;
     protocolLayerOptions.IfNoneMatch = options.IfNoneMatch;
+    protocolLayerOptions.IfTags = options.TagConditions;
     return BlobRestClient::Blob::AcquireLease(
-        options.Context, *m_pipeline, m_blobUrl.ToString(), protocolLayerOptions);
+        options.Context, *m_pipeline, m_blobUrl, protocolLayerOptions);
   }
 
   Azure::Core::Response<RenewBlobLeaseResult> BlobClient::RenewLease(
@@ -645,8 +654,9 @@ namespace Azure { namespace Storage { namespace Blobs {
     protocolLayerOptions.IfUnmodifiedSince = options.IfUnmodifiedSince;
     protocolLayerOptions.IfMatch = options.IfMatch;
     protocolLayerOptions.IfNoneMatch = options.IfNoneMatch;
+    protocolLayerOptions.IfTags = options.TagConditions;
     return BlobRestClient::Blob::RenewLease(
-        options.Context, *m_pipeline, m_blobUrl.ToString(), protocolLayerOptions);
+        options.Context, *m_pipeline, m_blobUrl, protocolLayerOptions);
   }
 
   Azure::Core::Response<ReleaseBlobLeaseResult> BlobClient::ReleaseLease(
@@ -659,8 +669,9 @@ namespace Azure { namespace Storage { namespace Blobs {
     protocolLayerOptions.IfUnmodifiedSince = options.IfUnmodifiedSince;
     protocolLayerOptions.IfMatch = options.IfMatch;
     protocolLayerOptions.IfNoneMatch = options.IfNoneMatch;
+    protocolLayerOptions.IfTags = options.TagConditions;
     return BlobRestClient::Blob::ReleaseLease(
-        options.Context, *m_pipeline, m_blobUrl.ToString(), protocolLayerOptions);
+        options.Context, *m_pipeline, m_blobUrl, protocolLayerOptions);
   }
 
   Azure::Core::Response<ChangeBlobLeaseResult> BlobClient::ChangeLease(
@@ -675,8 +686,9 @@ namespace Azure { namespace Storage { namespace Blobs {
     protocolLayerOptions.IfUnmodifiedSince = options.IfUnmodifiedSince;
     protocolLayerOptions.IfMatch = options.IfMatch;
     protocolLayerOptions.IfNoneMatch = options.IfNoneMatch;
+    protocolLayerOptions.IfTags = options.TagConditions;
     return BlobRestClient::Blob::ChangeLease(
-        options.Context, *m_pipeline, m_blobUrl.ToString(), protocolLayerOptions);
+        options.Context, *m_pipeline, m_blobUrl, protocolLayerOptions);
   }
 
   Azure::Core::Response<BreakBlobLeaseResult> BlobClient::BreakLease(
@@ -688,8 +700,29 @@ namespace Azure { namespace Storage { namespace Blobs {
     protocolLayerOptions.IfUnmodifiedSince = options.IfUnmodifiedSince;
     protocolLayerOptions.IfMatch = options.IfMatch;
     protocolLayerOptions.IfNoneMatch = options.IfNoneMatch;
+    protocolLayerOptions.IfTags = options.TagConditions;
     return BlobRestClient::Blob::BreakLease(
-        options.Context, *m_pipeline, m_blobUrl.ToString(), protocolLayerOptions);
+        options.Context, *m_pipeline, m_blobUrl, protocolLayerOptions);
+  }
+
+  Azure::Core::Response<SetBlobTagsResult> BlobClient::SetTags(
+      std::map<std::string, std::string> tags,
+      const SetBlobTagsOptions& options) const
+  {
+    BlobRestClient::Blob::SetBlobTagsOptions protocolLayerOptions;
+    protocolLayerOptions.Tags = std::move(tags);
+    protocolLayerOptions.IfTags = options.TagConditions;
+    return BlobRestClient::Blob::SetTags(
+        options.Context, *m_pipeline, m_blobUrl, protocolLayerOptions);
+  }
+
+  Azure::Core::Response<GetBlobTagsResult> BlobClient::GetTags(
+      const GetBlobTagsOptions& options) const
+  {
+    BlobRestClient::Blob::GetBlobTagsOptions protocolLayerOptions;
+    protocolLayerOptions.IfTags = options.TagConditions;
+    return BlobRestClient::Blob::GetTags(
+        options.Context, *m_pipeline, m_blobUrl, protocolLayerOptions);
   }
 
 }}} // namespace Azure::Storage::Blobs

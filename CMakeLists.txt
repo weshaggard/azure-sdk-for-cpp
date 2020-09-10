@@ -52,7 +52,11 @@ include(global_compile_options)
 # Documentation automation function
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake-modules/doxygen_common.cmake)
 
+# Functions for library versions
+include(${CMAKE_CURRENT_SOURCE_DIR}/cmake-modules/az_version.cmake)
+
 # sub-projects
+# add_subdirectory(sdk/core/performance-stress)
 add_subdirectory(sdk/core/azure-core)
 if(BUILD_CURL_TRANSPORT)
     add_subdirectory(sdk/core/azure-core/test/e2e) # will work only if BUILD_CURL_TRANSPORT=ON

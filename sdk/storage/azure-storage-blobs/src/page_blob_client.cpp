@@ -87,6 +87,7 @@ namespace Azure { namespace Storage { namespace Blobs {
     protocolLayerOptions.IfUnmodifiedSince = options.AccessConditions.IfUnmodifiedSince;
     protocolLayerOptions.IfMatch = options.AccessConditions.IfMatch;
     protocolLayerOptions.IfNoneMatch = options.AccessConditions.IfNoneMatch;
+    protocolLayerOptions.IfTags = options.AccessConditions.TagConditions;
     if (m_customerProvidedKey.HasValue())
     {
       protocolLayerOptions.EncryptionKey = m_customerProvidedKey.GetValue().Key;
@@ -95,7 +96,7 @@ namespace Azure { namespace Storage { namespace Blobs {
     }
     protocolLayerOptions.EncryptionScope = m_encryptionScope;
     return BlobRestClient::PageBlob::Create(
-        options.Context, *m_pipeline, m_blobUrl.ToString(), protocolLayerOptions);
+        options.Context, *m_pipeline, m_blobUrl, protocolLayerOptions);
   }
 
   Azure::Core::Response<UploadPageBlobPagesResult> PageBlobClient::UploadPages(
@@ -112,6 +113,7 @@ namespace Azure { namespace Storage { namespace Blobs {
     protocolLayerOptions.IfUnmodifiedSince = options.AccessConditions.IfUnmodifiedSince;
     protocolLayerOptions.IfMatch = options.AccessConditions.IfMatch;
     protocolLayerOptions.IfNoneMatch = options.AccessConditions.IfNoneMatch;
+    protocolLayerOptions.IfTags = options.AccessConditions.TagConditions;
     if (m_customerProvidedKey.HasValue())
     {
       protocolLayerOptions.EncryptionKey = m_customerProvidedKey.GetValue().Key;
@@ -120,7 +122,7 @@ namespace Azure { namespace Storage { namespace Blobs {
     }
     protocolLayerOptions.EncryptionScope = m_encryptionScope;
     return BlobRestClient::PageBlob::UploadPages(
-        options.Context, *m_pipeline, m_blobUrl.ToString(), content, protocolLayerOptions);
+        options.Context, *m_pipeline, m_blobUrl, content, protocolLayerOptions);
   }
 
   Azure::Core::Response<UploadPageBlobPagesFromUriResult> PageBlobClient::UploadPagesFromUri(
@@ -143,6 +145,7 @@ namespace Azure { namespace Storage { namespace Blobs {
     protocolLayerOptions.IfUnmodifiedSince = options.AccessConditions.IfUnmodifiedSince;
     protocolLayerOptions.IfMatch = options.AccessConditions.IfMatch;
     protocolLayerOptions.IfNoneMatch = options.AccessConditions.IfNoneMatch;
+    protocolLayerOptions.IfTags = options.AccessConditions.TagConditions;
     if (m_customerProvidedKey.HasValue())
     {
       protocolLayerOptions.EncryptionKey = m_customerProvidedKey.GetValue().Key;
@@ -151,7 +154,7 @@ namespace Azure { namespace Storage { namespace Blobs {
     }
     protocolLayerOptions.EncryptionScope = m_encryptionScope;
     return BlobRestClient::PageBlob::UploadPagesFromUri(
-        options.Context, *m_pipeline, m_blobUrl.ToString(), protocolLayerOptions);
+        options.Context, *m_pipeline, m_blobUrl, protocolLayerOptions);
   }
 
   Azure::Core::Response<ClearPageBlobPagesResult> PageBlobClient::ClearPages(
@@ -166,6 +169,7 @@ namespace Azure { namespace Storage { namespace Blobs {
     protocolLayerOptions.IfUnmodifiedSince = options.AccessConditions.IfUnmodifiedSince;
     protocolLayerOptions.IfMatch = options.AccessConditions.IfMatch;
     protocolLayerOptions.IfNoneMatch = options.AccessConditions.IfNoneMatch;
+    protocolLayerOptions.IfTags = options.AccessConditions.TagConditions;
     if (m_customerProvidedKey.HasValue())
     {
       protocolLayerOptions.EncryptionKey = m_customerProvidedKey.GetValue().Key;
@@ -174,7 +178,7 @@ namespace Azure { namespace Storage { namespace Blobs {
     }
     protocolLayerOptions.EncryptionScope = m_encryptionScope;
     return BlobRestClient::PageBlob::ClearPages(
-        options.Context, *m_pipeline, m_blobUrl.ToString(), protocolLayerOptions);
+        options.Context, *m_pipeline, m_blobUrl, protocolLayerOptions);
   }
 
   Azure::Core::Response<ResizePageBlobResult> PageBlobClient::Resize(
@@ -188,6 +192,7 @@ namespace Azure { namespace Storage { namespace Blobs {
     protocolLayerOptions.IfUnmodifiedSince = options.AccessConditions.IfUnmodifiedSince;
     protocolLayerOptions.IfMatch = options.AccessConditions.IfMatch;
     protocolLayerOptions.IfNoneMatch = options.AccessConditions.IfNoneMatch;
+    protocolLayerOptions.IfTags = options.AccessConditions.TagConditions;
     if (m_customerProvidedKey.HasValue())
     {
       protocolLayerOptions.EncryptionKey = m_customerProvidedKey.GetValue().Key;
@@ -196,7 +201,7 @@ namespace Azure { namespace Storage { namespace Blobs {
     }
     protocolLayerOptions.EncryptionScope = m_encryptionScope;
     return BlobRestClient::PageBlob::Resize(
-        options.Context, *m_pipeline, m_blobUrl.ToString(), protocolLayerOptions);
+        options.Context, *m_pipeline, m_blobUrl, protocolLayerOptions);
   }
 
   Azure::Core::Response<GetPageBlobPageRangesResult> PageBlobClient::GetPageRanges(
@@ -215,8 +220,9 @@ namespace Azure { namespace Storage { namespace Blobs {
     protocolLayerOptions.IfUnmodifiedSince = options.AccessConditions.IfUnmodifiedSince;
     protocolLayerOptions.IfMatch = options.AccessConditions.IfMatch;
     protocolLayerOptions.IfNoneMatch = options.AccessConditions.IfNoneMatch;
+    protocolLayerOptions.IfTags = options.AccessConditions.TagConditions;
     auto protocolLayerResponse = BlobRestClient::PageBlob::GetPageRanges(
-        options.Context, *m_pipeline, m_blobUrl.ToString(), protocolLayerOptions);
+        options.Context, *m_pipeline, m_blobUrl, protocolLayerOptions);
 
     GetPageBlobPageRangesResult ret;
     ret.ETag = std::move(protocolLayerResponse->ETag);
@@ -246,8 +252,9 @@ namespace Azure { namespace Storage { namespace Blobs {
     protocolLayerOptions.IfUnmodifiedSince = options.AccessConditions.IfUnmodifiedSince;
     protocolLayerOptions.IfMatch = options.AccessConditions.IfMatch;
     protocolLayerOptions.IfNoneMatch = options.AccessConditions.IfNoneMatch;
+    protocolLayerOptions.IfTags = options.AccessConditions.TagConditions;
     return BlobRestClient::PageBlob::StartCopyIncremental(
-        options.Context, *m_pipeline, m_blobUrl.ToString(), protocolLayerOptions);
+        options.Context, *m_pipeline, m_blobUrl, protocolLayerOptions);
   }
 
 }}} // namespace Azure::Storage::Blobs
