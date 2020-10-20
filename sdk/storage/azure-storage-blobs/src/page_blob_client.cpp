@@ -31,7 +31,7 @@ namespace Azure { namespace Storage { namespace Blobs {
 
   PageBlobClient::PageBlobClient(
       const std::string& blobUri,
-      std::shared_ptr<Core::Credentials::ClientSecretCredential> credential,
+      std::shared_ptr<Identity::ClientSecretCredential> credential,
       const PageBlobClientOptions& options)
       : BlobClient(blobUri, std::move(credential), options)
   {
@@ -49,11 +49,12 @@ namespace Azure { namespace Storage { namespace Blobs {
     PageBlobClient newClient(*this);
     if (snapshot.empty())
     {
-      newClient.m_blobUrl.RemoveQuery(Details::c_HttpQuerySnapshot);
+      newClient.m_blobUrl.RemoveQueryParameter(Details::c_HttpQuerySnapshot);
     }
     else
     {
-      newClient.m_blobUrl.AppendQuery(Details::c_HttpQuerySnapshot, snapshot);
+      newClient.m_blobUrl.AppendQueryParameter(
+          Details::c_HttpQuerySnapshot, Details::UrlEncodeQueryParameter(snapshot));
     }
     return newClient;
   }
@@ -63,11 +64,12 @@ namespace Azure { namespace Storage { namespace Blobs {
     PageBlobClient newClient(*this);
     if (versionId.empty())
     {
-      newClient.m_blobUrl.RemoveQuery(Details::c_HttpQueryVersionId);
+      newClient.m_blobUrl.RemoveQueryParameter(Details::c_HttpQueryVersionId);
     }
     else
     {
-      newClient.m_blobUrl.AppendQuery(Details::c_HttpQueryVersionId, versionId);
+      newClient.m_blobUrl.AppendQueryParameter(
+          Details::c_HttpQueryVersionId, Details::UrlEncodeQueryParameter(versionId));
     }
     return newClient;
   }

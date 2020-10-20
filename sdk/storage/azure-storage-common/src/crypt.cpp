@@ -16,10 +16,92 @@
 #endif
 
 #include <stdexcept>
+#include <vector>
 
 #include "azure/storage/common/storage_common.hpp"
 
 namespace Azure { namespace Storage {
+
+  namespace Details {
+    static const char* c_unreserved
+        = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._~";
+    static const char* c_subdelimiters = "!$&'()*+,;=";
+    const char* c_hex = "0123456789ABCDEF";
+
+    std::string UrlEncodeQueryParameter(const std::string& value)
+    {
+      const static std::vector<bool> shouldEncodeTable = []() {
+        std::string queryCharacters
+            = std::string(c_unreserved) + std::string(c_subdelimiters) + "%/:@?";
+
+        std::vector<bool> ret(256, true);
+        for (char c : queryCharacters)
+        {
+          ret[c] = false;
+        }
+        // we also encode % and +
+        ret['%'] = true;
+        ret['+'] = true;
+        // Surprisingly, '=' also needs to be encoded because Azure Storage server side is so
+        // strict. We are applying this function to query key and value respectively, so this won't
+        // affect that = used to separate key and query.
+        ret['='] = true;
+        return ret;
+      }();
+
+      std::string encoded;
+      for (char c : value)
+      {
+        unsigned char uc = c;
+        if (shouldEncodeTable[uc])
+        {
+          encoded += '%';
+          encoded += c_hex[(uc >> 4) & 0x0f];
+          encoded += c_hex[uc & 0x0f];
+        }
+        else
+        {
+          encoded += c;
+        }
+      }
+      return encoded;
+    }
+
+    std::string UrlEncodePath(const std::string& value)
+    {
+      const static std::vector<bool> shouldEncodeTable = []() {
+        std::string pathCharacters
+            = std::string(c_unreserved) + std::string(c_subdelimiters) + "%/:@";
+
+        std::vector<bool> ret(256, true);
+        for (char c : pathCharacters)
+        {
+          ret[c] = false;
+        }
+        // we also encode % and +
+        ret['%'] = true;
+        ret['+'] = true;
+        return ret;
+      }();
+
+      std::string encoded;
+      for (char c : value)
+      {
+        unsigned char uc = c;
+        if (shouldEncodeTable[uc])
+        {
+          encoded += '%';
+          encoded += c_hex[(uc >> 4) & 0x0f];
+          encoded += c_hex[uc & 0x0f];
+        }
+        else
+        {
+          encoded += c;
+        }
+      }
+      return encoded;
+    }
+  } // namespace Details
 
 #ifdef _WIN32
 
