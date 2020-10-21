@@ -46,7 +46,7 @@
         }
     },
     "variables": {
-        "storageApiVersion": "2019-04-01",
+        "storageApiVersion": "2019-06-01",
         "location": "[resourceGroup().location]",
         "accountName": "[parameters('baseName')]",
         "datalakeAccountName": "[concat('d', parameters('baseName'))]",
@@ -126,14 +126,20 @@
                             "enabled": true,
                             "days": 7
                         },
+                        "changeFeed": {
+                            "enabled": true
+                        },
                         "containerDeleteRetentionPolicy": {
                             "enabled": true,
                             "days": 7
                         },
-                        "changeFeed": {
-                            "enabled": true
+                        "lastAccessTimeTrackingPolicy": {
+                            "enable": true,
+                            "name": "AccessTimeTracking",
+                            "trackingGranularityInDays": 1,
+                            "blobType": [ "blockBlob" ]
                         },
-                        "isVersioningEnabled": true,
+                        "isVersioningEnabled": "[parameters('enableVersioning')]",
                         "cors": {
                             "corsRules": [
                                 {
@@ -172,6 +178,10 @@
                         "[variables('accountName')]"
                     ],
                     "properties": {
+                        "shareDeleteRetentionPolicy": {
+                            "enabled": true,
+                            "days": 7
+                        },
                         "cors": {
                             "corsRules": [
                                 {
