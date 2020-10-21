@@ -119,8 +119,10 @@
                     ],
                     "properties": {
                         "isVersioningEnabled": "[parameters('enableVersioning')]",
-                        "enabled": true,
-                        "days": 1,
+                        "containerDeleteRetentionPolicy": {
+                            "enabled": true,
+                            "days": 7
+                        },
                         "cors": {
                             "corsRules": [
                                 {
