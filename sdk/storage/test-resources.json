@@ -118,11 +118,22 @@
                         "[variables('accountName')]"
                     ],
                     "properties": {
-                        "isVersioningEnabled": "[parameters('enableVersioning')]",
+                        "restorePolicy": {
+                            "enabled": true,
+                            "days": 6
+                        },
+                        "deleteRetentionPolicy": {
+                            "enabled": true,
+                            "days": 7
+                        },
                         "containerDeleteRetentionPolicy": {
                             "enabled": true,
                             "days": 7
                         },
+                        "changeFeed": {
+                            "enabled": true
+                        },
+                        "isVersioningEnabled": true,
                         "cors": {
                             "corsRules": [
                                 {
